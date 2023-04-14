@@ -2,7 +2,6 @@ import styled from "styled-components";
 import { Field as FieldFormik, Form as FormFormik, Formik as FormikHeader } from "formik";
 
 export const Wrapper = styled.header`
-    margin-bottom: 20px;
     top: 0;
     left: 0;
     position: sticky;

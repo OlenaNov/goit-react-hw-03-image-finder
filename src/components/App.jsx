@@ -5,6 +5,8 @@ import { fetchImages } from "./utilities/api";
 import ImageGallery from "./ImageGallery";
 import Button from "./Button";
 import Loader from "./Loader";
+import { errors } from './constants/errors';
+import Error from "./Error";
 
 export class App extends Component {
 
@@ -12,35 +14,54 @@ export class App extends Component {
     result: [],
     query: '',
     page: 1,
+    error: '',
   };
 
   handleSubmit = async query => {
     this.setState({ isLoading: true, });
-    const result =  await fetchImages(query);
 
+    try {
+
+    const result =  await fetchImages(query);
     this.setState({ 
         result: [...result],
         query,
         page: 1,
-        isLoading: false,
        });
+
+      } catch {
+        this.setState({ error: errors.errFetch });
+
+    } finally {
+      
+      this.setState({ isLoading: false, });
+    };
   };
 
   handleLoadMore = async () => {
     this.setState({ isLoading: true, });
     const { query, page } = this.state;
     const nextPage = page + 1;
+    try {
     const result =  await fetchImages(query, nextPage);
 
     this.setState(prevState => ({ 
+
         result: [...prevState.result, ...result],
         page: nextPage,
-        isLoading: false,
        }));
+
+      } catch {
+        this.setState({ error: errors.errFetch });
+
+    } finally {
+
+      this.setState({ isLoading: false, });
+    };
   }
 
   render() {
-    const { result, isLoading } = this.state;
+    const { result, isLoading, error } = this.state;
 
     return (
 
@@ -48,9 +69,10 @@ export class App extends Component {
         <Searchbar onSubmit={this.handleSubmit} />
         {result && <ImageGallery items={result} /> }
         {isLoading && <Loader />}
-        {result.length 
+        {result.length && !isLoading 
         ? <Button fetchMore={this.handleLoadMore} /> 
         : null}
+        {error && <Error errorText={error} />}
       </Layout>
     );
   };
