@@ -1,4 +1,5 @@
 import { Component } from "react";
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import Layout from "./Layout";
 import Searchbar from "./Searchbar";
 import { fetchImages } from "./utilities/api";
@@ -29,6 +30,10 @@ export class App extends Component {
         page: 1,
        });
 
+      if(!result.length) {
+        Notify.info("Sorry, we didn't find the image you requested. Try again!");
+      };
+
       } catch {
         this.setState({ error: errors.errFetch });
 
@@ -50,6 +55,10 @@ export class App extends Component {
         result: [...prevState.result, ...result],
         page: nextPage,
        }));
+
+      if(!result.length) {
+        Notify.info("Sorry, we didn't find the image you requested. Try again!");
+      };
 
       } catch {
         this.setState({ error: errors.errFetch });
